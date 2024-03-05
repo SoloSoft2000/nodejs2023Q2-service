@@ -1,3 +1,5 @@
+import { IsNotEmpty, IsUUID } from 'class-validator';
+
 export interface User {
   id: string; // uuid v4
   login: string;
@@ -7,7 +9,15 @@ export interface User {
   updatedAt: number; // timestamp of last update
 }
 
-export interface CreateUserDto {
+export class CreateUserDto {
+  @IsNotEmpty()
   login: string;
+
+  @IsNotEmpty()
   password: string;
+}
+
+export class IdParamsDto {
+  @IsUUID()
+  id: string;
 }

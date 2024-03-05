@@ -10,6 +10,10 @@ export class UserService {
     return this.users;
   }
 
+  getUserById(userId: string): User {
+    return this.users.find((user) => user.id === userId);
+  }
+
   create(user: CreateUserDto): User {
     const dateNow = Date.now();
     const newUser: User = {

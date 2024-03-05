@@ -1,6 +1,16 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto, User } from './interfaces/user.interface';
+import { CreateUserDto, IdParamsDto, User } from './interfaces/user.interface';
 
 @Controller('user')
 export class UserController {
@@ -12,11 +22,17 @@ export class UserController {
   }
 
   @Get(':id')
-  getUserById(@Param() params: any): string {
-    return `get user by id: ${params.id}`;
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async getUserById(@Param() params: IdParamsDto): Promise<User> {
+    const user = this.userService.getUserById(params.id);
+    if (user) {
+      return user;
+    }
+    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 
   @Post()
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.userService.create(createUserDto);
   }
