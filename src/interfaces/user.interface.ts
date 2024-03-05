@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsUUID } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 
 export class User {
   id: string; // uuid v4
@@ -15,11 +15,6 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   password: string;
-}
-
-export class IdParamsDto {
-  @IsUUID()
-  id: string;
 }
 
 export class UpdateUserDto {

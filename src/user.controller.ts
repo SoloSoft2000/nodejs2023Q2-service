@@ -6,6 +6,7 @@ import {
   HttpException,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
   Put,
   UsePipes,
@@ -14,7 +15,6 @@ import {
 import { UserService } from './user.service';
 import {
   CreateUserDto,
-  IdParamsDto,
   UpdateUserDto,
   User,
 } from './interfaces/user.interface';
@@ -28,10 +28,11 @@ export class UserController {
     return this.userService.getUsers();
   }
 
-  @Get(':id')
-  @UsePipes(new ValidationPipe({ transform: true }))
-  async getUserById(@Param() params: IdParamsDto): Promise<User> {
-    const user = this.userService.getUserById(params.id);
+  @Get(':uuid')
+  async getUserById(
+    @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
+  ): Promise<User> {
+    const user = this.userService.getUserById(uuid);
     if (user) {
       return user;
     }
@@ -44,23 +45,24 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @Delete(':id')
-  @UsePipes(new ValidationPipe({ transform: true }))
-  async deleteUser(@Param() params: IdParamsDto): Promise<boolean> {
-    const isFound = this.userService.deleteUser(params.id);
+  @Delete(':uuid')
+  async deleteUser(
+    @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
+  ) {
+    const isFound = this.userService.deleteUser(uuid);
     if (isFound) {
-      return isFound;
+      return { message: 'User deleted successfully' };
     }
     throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 
-  @Put(':id')
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @Put(':uuid')
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async updateUser(
-    @Param() params: IdParamsDto,
+    @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    const result = this.userService.updateById(params.id, updateUserDto);
+    const result = this.userService.updateById(uuid, updateUserDto);
     if (!result.success) {
       if (result.error === 'UserNotFound') {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
