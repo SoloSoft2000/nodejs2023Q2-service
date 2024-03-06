@@ -35,16 +35,12 @@ export class TrackService {
     }
 
     const track = this.tracks[idx];
-    console.log('-----------------', track);
-    console.log('++++++++++++++++', updateTrackDto);
-
     track.name = updateTrackDto.name || track.name;
     track.duration = updateTrackDto.duration || track.duration;
     track.albumId = updateTrackDto.albumId || track.albumId;
     track.artistId = updateTrackDto.artistId || track.artistId;
 
     this.tracks[idx] = track;
-    console.log('===============', this.tracks[idx]);
 
     return this.tracks[idx];
   }
