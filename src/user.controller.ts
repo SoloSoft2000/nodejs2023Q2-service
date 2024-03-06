@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -9,6 +10,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -16,22 +18,24 @@ import { UserService } from './user.service';
 import {
   CreateUserDto,
   UpdateUserDto,
-  User,
+  UserEntity,
 } from './interfaces/user.interface';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  async getUsers(): Promise<User[]> {
+  async getUsers(): Promise<UserEntity[]> {
     return this.userService.getUsers();
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':uuid')
   async getUserById(
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
-  ): Promise<User> {
+  ): Promise<UserEntity> {
     const user = this.userService.getUserById(uuid);
     if (user) {
       return user;
@@ -39,9 +43,10 @@ export class UserController {
     throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
-  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
+  async create(@Body() createUserDto: CreateUserDto): Promise<UserEntity> {
     return this.userService.create(createUserDto);
   }
 
