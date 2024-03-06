@@ -2,26 +2,26 @@ import { Injectable } from '@nestjs/common';
 import {
   CreateUserDto,
   UpdateUserDto,
-  UserEntity,
+  User,
 } from './interfaces/user.interface';
 import { randomUUID } from 'crypto';
 import { UpdateStatus } from './interfaces/comon.interfaces';
 
 @Injectable()
 export class UserService {
-  private users: UserEntity[] = [];
+  private users: User[] = [];
 
-  getUsers(): UserEntity[] {
+  getUsers(): User[] {
     return this.users;
   }
 
-  getUserById(userId: string): UserEntity {
+  getUserById(userId: string): User {
     return this.users.find((user) => user.id === userId);
   }
 
-  create(user: CreateUserDto): UserEntity {
+  create(user: CreateUserDto): User {
     const dateNow = Date.now();
-    const newUser = new UserEntity({
+    const newUser = new User({
       id: randomUUID(),
       version: 0,
       createdAt: dateNow,

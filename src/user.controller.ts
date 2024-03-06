@@ -18,7 +18,7 @@ import { UserService } from './user.service';
 import {
   CreateUserDto,
   UpdateUserDto,
-  UserEntity,
+  User,
 } from './interfaces/user.interface';
 
 @Controller('user')
@@ -27,7 +27,7 @@ export class UserController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  async getUsers(): Promise<UserEntity[]> {
+  async getUsers(): Promise<User[]> {
     return this.userService.getUsers();
   }
 
@@ -35,7 +35,7 @@ export class UserController {
   @Get(':uuid')
   async getUserById(
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
-  ): Promise<UserEntity> {
+  ): Promise<User> {
     const user = this.userService.getUserById(uuid);
     if (user) {
       return user;
@@ -46,7 +46,7 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
-  async create(@Body() createUserDto: CreateUserDto): Promise<UserEntity> {
+  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.userService.create(createUserDto);
   }
 

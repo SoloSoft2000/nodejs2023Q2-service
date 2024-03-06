@@ -1,7 +1,7 @@
 import { Exclude } from 'class-transformer';
 import { IsNotEmpty } from 'class-validator';
 
-export class UserEntity {
+export class User {
   id: string; // uuid v4
   login: string;
   version: number; // integer number, increments on update
@@ -11,7 +11,7 @@ export class UserEntity {
   @Exclude()
   password: string;
 
-  constructor(partial: Partial<UserEntity>) {
+  constructor(partial: Partial<User>) {
     Object.assign(this, partial);
   }
 }
