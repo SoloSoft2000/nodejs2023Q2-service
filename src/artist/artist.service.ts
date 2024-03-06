@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { Artist } from './entities/artist.entity';
@@ -29,7 +29,7 @@ export class ArtistService {
   update(id: string, updateArtistDto: UpdateArtistDto) {
     const idx = this.artists.findIndex((artist) => artist.id === id);
     if (idx === -1) {
-      return { success: false, error: 'IdNotFound' };
+      throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
     }
 
     const artist = this.artists[idx];
@@ -38,7 +38,7 @@ export class ArtistService {
     artist.grammy = updateArtistDto.grammy;
     this.artists[idx] = artist;
 
-    return { success: true };
+    return this.artists[idx];
   }
 
   remove(id: string) {
