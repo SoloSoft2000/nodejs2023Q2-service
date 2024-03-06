@@ -1,4 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+  UsePipes,
+  ValidationPipe,
+  ParseUUIDPipe,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { TrackService } from './track.service';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
@@ -8,6 +22,7 @@ export class TrackController {
   constructor(private readonly trackService: TrackService) {}
 
   @Post()
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   create(@Body() createTrackDto: CreateTrackDto) {
     return this.trackService.create(createTrackDto);
   }
@@ -17,18 +32,31 @@ export class TrackController {
     return this.trackService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.trackService.findOne(+id);
+  @Get(':uuid')
+  findOne(@Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string) {
+    const track = this.trackService.findOne(uuid);
+    if (track) {
+      return track;
+    }
+    throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTrackDto: UpdateTrackDto) {
-    return this.trackService.update(+id, updateTrackDto);
+  @Put(':uuid')
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  update(
+    @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
+    @Body() updateTrackDto: UpdateTrackDto,
+  ) {
+    return this.trackService.update(uuid, updateTrackDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.trackService.remove(+id);
+  @Delete(':uuid')
+  @HttpCode(204)
+  remove(@Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string) {
+    const isDeleted = this.trackService.remove(uuid);
+    if (isDeleted) {
+      return { message: 'User deleted successfully' };
+    }
+    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 }
