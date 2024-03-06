@@ -15,11 +15,8 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import {
-  CreateUserDto,
-  UpdateUserDto,
-  User,
-} from './interfaces/user.interface';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -27,16 +24,14 @@ export class UserController {
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  async getUsers(): Promise<User[]> {
-    return this.userService.getUsers();
+  findAll() {
+    return this.userService.findAll();
   }
 
   @UseInterceptors(ClassSerializerInterceptor)
   @Get(':uuid')
-  async getUserById(
-    @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
-  ): Promise<User> {
-    const user = this.userService.getUserById(uuid);
+  findOne(@Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string) {
+    const user = this.userService.findOne(uuid);
     if (user) {
       return user;
     }
@@ -46,7 +41,7 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
-  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
+  create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
@@ -54,7 +49,7 @@ export class UserController {
   async deleteUser(
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
   ) {
-    const isFound = this.userService.deleteUser(uuid);
+    const isFound = this.userService.remove(uuid);
     if (isFound) {
       return { message: 'User deleted successfully' };
     }
@@ -67,9 +62,9 @@ export class UserController {
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    const result = this.userService.updateById(uuid, updateUserDto);
+    const result = this.userService.update(uuid, updateUserDto);
     if (!result.success) {
-      if (result.error === 'UserNotFound') {
+      if (result.error === 'IdNotFound') {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       } else if (result.error === 'InvalidPassword') {
         throw new HttpException('Old password not valid', HttpStatus.FORBIDDEN);

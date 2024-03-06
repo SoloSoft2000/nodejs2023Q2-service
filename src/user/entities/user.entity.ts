@@ -1,5 +1,4 @@
 import { Exclude } from 'class-transformer';
-import { IsNotEmpty } from 'class-validator';
 
 export class User {
   id: string; // uuid v4
@@ -14,20 +13,4 @@ export class User {
   constructor(partial: Partial<User>) {
     Object.assign(this, partial);
   }
-}
-
-export class CreateUserDto {
-  @IsNotEmpty()
-  login: string;
-
-  @IsNotEmpty()
-  password: string;
-}
-
-export class UpdateUserDto {
-  @IsNotEmpty()
-  oldPassword: string; // previous password
-
-  @IsNotEmpty()
-  newPassword: string; // new password
 }

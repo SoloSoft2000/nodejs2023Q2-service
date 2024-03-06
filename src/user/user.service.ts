@@ -1,21 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import {
-  CreateUserDto,
-  UpdateUserDto,
-  User,
-} from './interfaces/user.interface';
 import { randomUUID } from 'crypto';
-import { UpdateStatus } from './interfaces/comon.interfaces';
+import { User } from './entities/user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UserService {
   private users: User[] = [];
 
-  getUsers(): User[] {
+  findAll() {
     return this.users;
   }
 
-  getUserById(userId: string): User {
+  findOne(userId: string) {
     return this.users.find((user) => user.id === userId);
   }
 
@@ -32,16 +29,16 @@ export class UserService {
     return newUser;
   }
 
-  deleteUser(userId: string): boolean {
+  remove(userId: string) {
     const initialLength = this.users.length;
     this.users = this.users.filter((user) => user.id !== userId);
     return initialLength !== this.users.length;
   }
 
-  updateById(userId: string, userData: UpdateUserDto): UpdateStatus {
+  update(userId: string, userData: UpdateUserDto) {
     const idx = this.users.findIndex((user) => user.id === userId);
     if (idx === -1) {
-      return { success: false, error: 'UserNotFound' };
+      return { success: false, error: 'IdNotFound' };
     }
 
     const user = this.users[idx];
