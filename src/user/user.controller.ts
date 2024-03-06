@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpException,
   HttpStatus,
   Param,
@@ -46,6 +47,7 @@ export class UserController {
   }
 
   @Delete(':uuid')
+  @HttpCode(204)
   async deleteUser(
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
   ) {
@@ -56,20 +58,13 @@ export class UserController {
     throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Put(':uuid')
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async updateUser(
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    const result = this.userService.update(uuid, updateUserDto);
-    if (!result.success) {
-      if (result.error === 'IdNotFound') {
-        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-      } else if (result.error === 'InvalidPassword') {
-        throw new HttpException('Old password not valid', HttpStatus.FORBIDDEN);
-      }
-    }
-    return { message: 'User updated successfully' };
+    return this.userService.update(uuid, updateUserDto);
   }
 }
