@@ -50,4 +50,22 @@ export class TrackService {
     this.tracks = this.tracks.filter((track) => track.id !== id);
     return initialLength !== this.tracks.length;
   }
+
+  removeArtist(id: string) {
+    this.tracks = this.tracks.map((track) => {
+      if (track.artistId === id) {
+        track.artistId = null;
+      }
+      return track;
+    });
+  }
+
+  removeAlbum(id: string) {
+    this.tracks = this.tracks.map((track) => {
+      if (track.albumId === id) {
+        track.albumId = null;
+      }
+      return track;
+    });
+  }
 }

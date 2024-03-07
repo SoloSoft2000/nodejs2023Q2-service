@@ -3,10 +3,13 @@ import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
 import { randomUUID } from 'crypto';
+import { TrackService } from 'src/track/track.service';
 
 @Injectable()
 export class AlbumService {
   private albums: Album[] = [];
+
+  constructor(private readonly trackService: TrackService) {}
 
   create(createAlbumDto: CreateAlbumDto) {
     const newAlbum = new Album({
@@ -46,6 +49,19 @@ export class AlbumService {
   remove(id: string) {
     const initialLength = this.albums.length;
     this.albums = this.albums.filter((album) => album.id !== id);
-    return initialLength !== this.albums.length;
+    const result = initialLength !== this.albums.length;
+    if (result) {
+      this.trackService.removeAlbum(id);
+    }
+    return result;
+  }
+
+  removeArtist(id: string) {
+    this.albums = this.albums.map((album) => {
+      if (album.artistId === id) {
+        album.artistId = null;
+      }
+      return album;
+    });
   }
 }
