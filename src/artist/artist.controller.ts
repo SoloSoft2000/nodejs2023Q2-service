@@ -22,7 +22,7 @@ export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}
 
   @Post()
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  @UsePipes(new ValidationPipe({ transform: true }))
   create(@Body() createArtistDto: CreateArtistDto) {
     return this.artistService.create(createArtistDto);
   }
@@ -55,8 +55,8 @@ export class ArtistController {
   remove(@Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string) {
     const isDeleted = this.artistService.remove(uuid);
     if (isDeleted) {
-      return { message: 'User deleted successfully' };
+      return { message: 'Artist deleted successfully' };
     }
-    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
   }
 }

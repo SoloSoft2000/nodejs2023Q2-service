@@ -22,7 +22,7 @@ export class TrackController {
   constructor(private readonly trackService: TrackService) {}
 
   @Post()
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  @UsePipes(new ValidationPipe({ transform: true }))
   create(@Body() createTrackDto: CreateTrackDto) {
     return this.trackService.create(createTrackDto);
   }
@@ -42,7 +42,7 @@ export class TrackController {
   }
 
   @Put(':uuid')
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  @UsePipes(new ValidationPipe({ transform: true }))
   update(
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
     @Body() updateTrackDto: UpdateTrackDto,
@@ -55,8 +55,8 @@ export class TrackController {
   remove(@Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string) {
     const isDeleted = this.trackService.remove(uuid);
     if (isDeleted) {
-      return { message: 'User deleted successfully' };
+      return { message: 'Track deleted successfully' };
     }
-    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
   }
 }

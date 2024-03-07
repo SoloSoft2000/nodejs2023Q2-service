@@ -22,7 +22,7 @@ export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 
   @Post()
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  @UsePipes(new ValidationPipe({ transform: true }))
   create(@Body() createAlbumDto: CreateAlbumDto) {
     return this.albumService.create(createAlbumDto);
   }
@@ -55,8 +55,8 @@ export class AlbumController {
   remove(@Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string) {
     const isDeleted = this.albumService.remove(uuid);
     if (isDeleted) {
-      return { message: 'User deleted successfully' };
+      return { message: 'Album deleted successfully' };
     }
-    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
   }
 }
