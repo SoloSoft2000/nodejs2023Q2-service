@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsUUID } from 'class-validator';
+import { IsInt, IsNotEmpty } from 'class-validator';
 
 export class CreateTrackDto {
   @IsNotEmpty()
