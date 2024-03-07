@@ -42,7 +42,7 @@ export class ArtistController {
   }
 
   @Put(':uuid')
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  @UsePipes(new ValidationPipe({ transform: true }))
   update(
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
     @Body() updateArtistDto: UpdateArtistDto,
