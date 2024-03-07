@@ -9,11 +9,28 @@ import { TrackService } from 'src/track/track.service';
 @Injectable()
 export class ArtistService {
   private artists: Artist[] = [];
+  private favorites: Set<string> = new Set();
 
   constructor(
     private readonly albumService: AlbumService,
     private readonly trackService: TrackService,
   ) {}
+
+  addToFavorites(id: string) {
+    this.favorites.add(id);
+  }
+
+  removeFromFavorites(id: string) {
+    this.favorites.delete(id);
+  }
+
+  getFavorites() {
+    return this.artists.filter((artist) => this.favorites.has(artist.id));
+  }
+
+  hasFavorite(id: string) {
+    return this.favorites.has(id);
+  }
 
   create(createArtistDto: CreateArtistDto) {
     const newArtist = new Artist({
@@ -55,6 +72,7 @@ export class ArtistService {
     if (result) {
       this.albumService.removeArtist(id);
       this.trackService.removeArtist(id);
+      this.removeFromFavorites(id);
     }
     return result;
   }

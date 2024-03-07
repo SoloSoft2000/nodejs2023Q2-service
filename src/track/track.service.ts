@@ -7,6 +7,23 @@ import { randomUUID } from 'crypto';
 @Injectable()
 export class TrackService {
   private tracks: Track[] = [];
+  private favorites: Set<string> = new Set();
+
+  addToFavorites(id: string) {
+    this.favorites.add(id);
+  }
+
+  removeFromFavorites(id: string) {
+    this.favorites.delete(id);
+  }
+
+  hasFavorite(id: string) {
+    return this.favorites.has(id);
+  }
+
+  getFavorites() {
+    return this.tracks.filter((track) => this.favorites.has(track.id));
+  }
 
   create(createTrackDto: CreateTrackDto) {
     const newTrack = new Track({
@@ -48,7 +65,11 @@ export class TrackService {
   remove(id: string) {
     const initialLength = this.tracks.length;
     this.tracks = this.tracks.filter((track) => track.id !== id);
-    return initialLength !== this.tracks.length;
+    const result = initialLength !== this.tracks.length;
+    if (result) {
+      this.removeFromFavorites(id);
+    }
+    return result;
   }
 
   removeArtist(id: string) {

@@ -5,10 +5,6 @@ import { TrackService } from '../track/track.service';
 
 @Injectable()
 export class FavsService {
-  private favArtists: string[] = [];
-  private favAlbums: string[] = [];
-  private favTracks: string[] = [];
-
   constructor(
     private readonly artistService: ArtistService,
     private readonly albumService: AlbumService,
@@ -16,9 +12,9 @@ export class FavsService {
   ) {}
 
   findAll() {
-    const artists = this.favArtists.map((id) => this.artistService.findOne(id));
-    const albums = this.favAlbums.map((id) => this.albumService.findOne(id));
-    const tracks = this.favTracks.map((id) => this.trackService.findOne(id));
+    const artists = this.artistService.getFavorites();
+    const albums = this.albumService.getFavorites();
+    const tracks = this.trackService.getFavorites();
     return { artists, albums, tracks };
   }
 
@@ -26,19 +22,19 @@ export class FavsService {
     switch (favTable) {
       case 'track':
         if (this.trackService.findOne(id)) {
-          this.favTracks.push(id);
+          this.trackService.addToFavorites(id);
           return true;
         }
         return false;
       case 'artist':
         if (this.artistService.findOne(id)) {
-          this.favArtists.push(id);
+          this.artistService.addToFavorites(id);
           return true;
         }
         return false;
       case 'album':
         if (this.albumService.findOne(id)) {
-          this.favAlbums.push(id);
+          this.albumService.addToFavorites(id);
           return true;
         }
         return false;
@@ -50,17 +46,23 @@ export class FavsService {
   remove(favTable: string, id: string) {
     switch (favTable) {
       case 'track':
-        const tracksLength = this.favTracks.length;
-        this.favTracks = this.favTracks.filter((item) => item !== id);
-        return tracksLength !== this.favTracks.length;
+        if (this.trackService.hasFavorite(id)) {
+          this.trackService.removeFromFavorites(id);
+          return true;
+        }
+        return false;
       case 'artist':
-        const artistsLength = this.favArtists.length;
-        this.favArtists = this.favArtists.filter((item) => item !== id);
-        return artistsLength !== this.favArtists.length;
+        if (this.artistService.hasFavorite(id)) {
+          this.artistService.removeFromFavorites(id);
+          return true;
+        }
+        return false;
       case 'album':
-        const albumsLength = this.favAlbums.length;
-        this.favAlbums = this.favAlbums.filter((item) => item !== id);
-        return albumsLength !== this.favAlbums.length;
+        if (this.albumService.hasFavorite(id)) {
+          this.albumService.removeFromFavorites(id);
+          return true;
+        }
+        return false;
       default:
         return false;
     }
