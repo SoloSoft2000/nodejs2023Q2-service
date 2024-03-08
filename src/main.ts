@@ -8,7 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const document = loadYaml();
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('doc', app, document);
 
   await app.listen(PORT, () => console.log(`Server started on ${PORT}`));
 }
