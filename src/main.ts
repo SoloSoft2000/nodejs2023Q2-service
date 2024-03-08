@@ -1,11 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import 'dotenv/config';
-
-const PORT = process.env.PORT;
+import { SwaggerModule } from '@nestjs/swagger';
+import { loadYaml } from './load-yaml';
 
 async function bootstrap() {
+  const PORT = process.env.PORT || 4000;
   const app = await NestFactory.create(AppModule);
-  await app.listen(PORT);
+
+  const document = loadYaml();
+  SwaggerModule.setup('api', app, document);
+
+  await app.listen(PORT, () => console.log(`Server started on ${PORT}`));
 }
 bootstrap();
