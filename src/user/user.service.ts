@@ -1,57 +1,85 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { randomUUID } from 'crypto';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class UserService {
-  private users: User[] = [];
+  constructor(private prisma: PrismaService) {}
 
-  findAll() {
-    return this.users;
-  }
-
-  findOne(userId: string) {
-    return this.users.find((user) => user.id === userId);
-  }
-
-  create(user: CreateUserDto): User {
-    const dateNow = Date.now();
-    const newUser = new User({
-      id: randomUUID(),
-      version: 1,
-      createdAt: dateNow,
-      updatedAt: dateNow,
-      ...user,
+  async findAll() {
+    return await this.prisma.user.findMany({
+      select: {
+        id: true,
+        login: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+        password: false,
+      },
     });
-    this.users.push(newUser);
-    return newUser;
   }
 
-  remove(userId: string) {
-    const initialLength = this.users.length;
-    this.users = this.users.filter((user) => user.id !== userId);
-    return initialLength !== this.users.length;
+  async findOne(userId: string) {
+    return await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        login: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+        password: false,
+      },
+    });
   }
 
-  update(userId: string, userData: UpdateUserDto) {
-    const idx = this.users.findIndex((user) => user.id === userId);
-    if (idx === -1) {
+  async create(user: CreateUserDto): Promise<User> {
+    const newUser = await this.prisma.user.create({ data: user });
+    const result: User = {
+      id: newUser.id,
+      login: newUser.login,
+      password: newUser.password,
+      version: newUser.version,
+      createdAt: newUser.createdAt.getMilliseconds(),
+      updatedAt: newUser.updatedAt.getMilliseconds(),
+    };
+    return result;
+  }
+
+  async remove(userId: string) {
+    const deletedUser = await this.prisma.user.delete({
+      where: {
+        id: userId,
+      },
+    });
+    return deletedUser ? true : false;
+  }
+
+  async update(userId: string, userData: UpdateUserDto) {
+    const userForUpdate = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+    if (!userForUpdate) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    const user = this.users[idx];
-
-    if (userData.oldPassword !== user.password) {
+    if (userData.oldPassword !== userForUpdate.password) {
       throw new HttpException('Old password not valid', HttpStatus.FORBIDDEN);
     }
 
-    user.password = userData.newPassword;
-    user.version++;
-    user.updatedAt = Date.now();
-    this.users[idx] = user;
-
-    return this.users[idx];
+    userForUpdate.password = userData.newPassword;
+    userForUpdate.version++;
+    return this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: userForUpdate,
+    });
   }
 }

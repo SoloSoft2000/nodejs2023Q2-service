@@ -6,11 +6,13 @@ async function main() {
   await prisma.user.create({
     data: {
       login: 'User1',
+      password: '12345',
     },
   });
   await prisma.user.create({
     data: {
       login: 'User2',
+      password: '54321',
     },
   });
   const artist = await prisma.artist.create({
