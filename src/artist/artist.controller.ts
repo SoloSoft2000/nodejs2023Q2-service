@@ -52,11 +52,14 @@ export class ArtistController {
 
   @Delete(':uuid')
   @HttpCode(204)
-  remove(@Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string) {
-    const isDeleted = this.artistService.remove(uuid);
-    if (isDeleted) {
+  async remove(
+    @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
+  ) {
+    try {
+      await this.artistService.remove(uuid);
       return { message: 'Artist deleted successfully' };
+    } catch {
+      throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
     }
-    throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
   }
 }
