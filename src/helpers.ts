@@ -10,3 +10,10 @@ export const convertDateFields = (data: {
   }
   return data;
 };
+
+export const removePasswordField = (data: { password: string }) => {
+  if (data && typeof data === 'object' && data.hasOwnProperty('password')) {
+    delete data.password;
+  }
+  return data;
+};

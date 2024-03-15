@@ -9,30 +9,13 @@ export class UserService {
   constructor(private prisma: PrismaService) {}
 
   async findAll() {
-    return await this.prisma.user.findMany({
-      select: {
-        id: true,
-        login: true,
-        version: true,
-        createdAt: true,
-        updatedAt: true,
-        password: false,
-      },
-    });
+    return await this.prisma.user.findMany();
   }
 
   async findOne(userId: string) {
     return await this.prisma.user.findUnique({
       where: {
         id: userId,
-      },
-      select: {
-        id: true,
-        login: true,
-        version: true,
-        createdAt: true,
-        updatedAt: true,
-        password: false,
       },
     });
   }

@@ -17,21 +17,23 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { DateToIntInterceptor } from './DateToInt.interceptor';
+import { UserInterceptor } from './user.interceptor';
 
-@UseInterceptors(new DateToIntInterceptor())
+@UseInterceptors(new UserInterceptor())
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  async findAll() {
+    return await this.userService.findAll();
   }
 
   @Get(':uuid')
-  findOne(@Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string) {
-    const user = this.userService.findOne(uuid);
+  async findOne(
+    @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
+  ) {
+    const user = await this.userService.findOne(uuid);
     if (user) {
       return user;
     }
@@ -40,8 +42,8 @@ export class UserController {
 
   @Post()
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    return await this.userService.create(createUserDto);
   }
 
   @Delete(':uuid')
@@ -49,7 +51,7 @@ export class UserController {
   async deleteUser(
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
   ) {
-    const isFound = this.userService.remove(uuid);
+    const isFound = await this.userService.remove(uuid);
     if (isFound) {
       return { message: 'User deleted successfully' };
     }
@@ -62,6 +64,6 @@ export class UserController {
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.userService.update(uuid, updateUserDto);
+    return await this.userService.update(uuid, updateUserDto);
   }
 }
