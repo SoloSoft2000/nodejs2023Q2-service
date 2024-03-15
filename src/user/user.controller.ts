@@ -51,11 +51,12 @@ export class UserController {
   async deleteUser(
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
   ) {
-    const isFound = await this.userService.remove(uuid);
-    if (isFound) {
+    try {
+      await this.userService.remove(uuid);
       return { message: 'User deleted successfully' };
+    } catch {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
-    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 
   @Put(':uuid')

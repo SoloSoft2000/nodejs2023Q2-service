@@ -25,12 +25,11 @@ export class UserService {
   }
 
   async remove(userId: string) {
-    const deletedUser = await this.prisma.user.delete({
+    return await this.prisma.user.delete({
       where: {
         id: userId,
       },
     });
-    return deletedUser ? true : false;
   }
 
   async update(userId: string, userData: UpdateUserDto) {
@@ -47,13 +46,15 @@ export class UserService {
       throw new HttpException('Old password not valid', HttpStatus.FORBIDDEN);
     }
 
-    userForUpdate.password = userData.newPassword;
-    userForUpdate.version++;
-    return this.prisma.user.update({
+    const newVersion = userForUpdate.version + 1;
+    return await this.prisma.user.update({
       where: {
         id: userId,
       },
-      data: userForUpdate,
+      data: {
+        password: userData.newPassword,
+        version: newVersion,
+      },
     });
   }
 }
