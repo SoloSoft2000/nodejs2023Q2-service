@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -38,16 +38,7 @@ export class UserService {
   }
 
   async create(user: CreateUserDto): Promise<User> {
-    const newUser = await this.prisma.user.create({ data: user });
-    const result: User = {
-      id: newUser.id,
-      login: newUser.login,
-      password: newUser.password,
-      version: newUser.version,
-      createdAt: newUser.createdAt.getMilliseconds(),
-      updatedAt: newUser.updatedAt.getMilliseconds(),
-    };
-    return result;
+    return await this.prisma.user.create({ data: user });
   }
 
   async remove(userId: string) {

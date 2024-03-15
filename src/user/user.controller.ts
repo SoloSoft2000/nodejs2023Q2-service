@@ -1,6 +1,5 @@
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -18,18 +17,18 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { DateToIntInterceptor } from './DateToInt.interceptor';
 
+@UseInterceptors(new DateToIntInterceptor())
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   findAll() {
     return this.userService.findAll();
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':uuid')
   findOne(@Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string) {
     const user = this.userService.findOne(uuid);
@@ -39,7 +38,6 @@ export class UserController {
     throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Post()
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   create(@Body() createUserDto: CreateUserDto) {
@@ -58,7 +56,6 @@ export class UserController {
     throw new HttpException('User not found', HttpStatus.NOT_FOUND);
   }
 
-  @UseInterceptors(ClassSerializerInterceptor)
   @Put(':uuid')
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async updateUser(
