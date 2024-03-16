@@ -56,7 +56,7 @@ export class ArtistService {
     if (!artistForUpdate) {
       throw new HttpException('Artist not found', HttpStatus.NOT_FOUND);
     }
-    console.log(artistForUpdate);
+
     return await this.prisma.artist.update({
       where: {
         id,
@@ -71,6 +71,7 @@ export class ArtistService {
         id,
       },
     });
+    
     if (result) {
       // this.albumService.removeArtist(id);
       // this.trackService.removeArtist(id);
