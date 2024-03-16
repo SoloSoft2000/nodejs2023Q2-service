@@ -1,68 +1,95 @@
 import { Injectable } from '@nestjs/common';
-import { AlbumService } from '../album/album.service';
-import { ArtistService } from '../artist/artist.service';
-import { TrackService } from '../track/track.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class FavsService {
-  constructor(
-    private readonly artistService: ArtistService,
-    private readonly albumService: AlbumService,
-    private readonly trackService: TrackService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
-  findAll() {
-    const artists = this.artistService.getFavorites();
-    const albums = this.albumService.getFavorites();
-    const tracks = this.trackService.getFavorites();
+  async findAll() {
+    const artists = await this.prisma.favorites.findMany({
+      where: {
+        artistId: {
+          not: null,
+        },
+      },
+      select: {
+        artist: true,
+        album: false,
+        track: false,
+      },
+    });
+    const albums = await this.prisma.favorites.findMany({
+      where: {
+        albumId: {
+          not: null,
+        },
+      },
+      select: {
+        album: true,
+        artist: false,
+        track: false,
+      },
+    });
+    const tracks = await this.prisma.favorites.findMany({
+      where: {
+        trackId: {
+          not: null,
+        },
+      },
+      select: {
+        track: true,
+        artist: false,
+        album: false,
+      },
+    });
     return { artists, albums, tracks };
   }
 
-  add(favTable: string, id: string) {
+  async add(favTable: string, id: string) {
     switch (favTable) {
       case 'track':
-        if (this.trackService.findOne(id)) {
-          this.trackService.addToFavorites(id);
-          return true;
-        }
-        return false;
+        return await this.prisma.favorites.create({
+          data: {
+            trackId: id,
+          },
+        });
       case 'artist':
-        if (this.artistService.findOne(id)) {
-          this.artistService.addToFavorites(id);
-          return true;
-        }
-        return false;
+        return await this.prisma.favorites.create({
+          data: {
+            artistId: id,
+          },
+        });
       case 'album':
-        if (this.albumService.findOne(id)) {
-          this.albumService.addToFavorites(id);
-          return true;
-        }
-        return false;
+        return await this.prisma.favorites.create({
+          data: {
+            albumId: id,
+          },
+        });
       default:
         return false;
     }
   }
 
-  remove(favTable: string, id: string) {
+  async remove(favTable: string, id: string) {
     switch (favTable) {
       case 'track':
-        if (this.trackService.hasFavorite(id)) {
-          this.trackService.removeFromFavorites(id);
-          return true;
-        }
-        return false;
+        return await this.prisma.favorites.deleteMany({
+          where: {
+            trackId: id,
+          },
+        });
       case 'artist':
-        if (this.artistService.hasFavorite(id)) {
-          this.artistService.removeFromFavorites(id);
-          return true;
-        }
-        return false;
+        return await this.prisma.favorites.deleteMany({
+          where: {
+            artistId: id,
+          },
+        });
       case 'album':
-        if (this.albumService.hasFavorite(id)) {
-          this.albumService.removeFromFavorites(id);
-          return true;
-        }
-        return false;
+        return await this.prisma.favorites.deleteMany({
+          where: {
+            albumId: id,
+          },
+        });
       default:
         return false;
     }

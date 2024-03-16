@@ -5,31 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class ArtistService {
-  // private favorites: Set<string> = new Set();
-
   constructor(private prisma: PrismaService) {}
-  // private readonly albumService: AlbumService,
-  // private readonly trackService: TrackService,
-
-  addToFavorites(id: string) {
-    console.log(`add to fav artist ${id}`);
-    // this.favorites.add(id);
-  }
-
-  removeFromFavorites(id: string) {
-    console.log(`remove from fav artist ${id}`);
-    // this.favorites.delete(id);
-  }
-
-  getFavorites() {
-    return []; //this.artists.filter((artist) => this.favorites.has(artist.id));
-  }
-
-  hasFavorite(id: string) {
-    console.log(`check in fav artist ${id}`);
-    return false;
-    // return this.favorites.has(id);
-  }
 
   async create(createArtistDto: CreateArtistDto) {
     return await this.prisma.artist.create({ data: createArtistDto });
@@ -66,17 +42,10 @@ export class ArtistService {
   }
 
   async remove(id: string) {
-    const result = await this.prisma.artist.delete({
+    return await this.prisma.artist.delete({
       where: {
         id,
       },
     });
-    
-    if (result) {
-      // this.albumService.removeArtist(id);
-      // this.trackService.removeArtist(id);
-      this.removeFromFavorites(id);
-    }
-    return result;
   }
 }

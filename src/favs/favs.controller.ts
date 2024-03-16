@@ -16,35 +16,37 @@ export class FavsController {
   constructor(private readonly favsService: FavsService) {}
 
   @Get()
-  findAll() {
-    return this.favsService.findAll();
+  async findAll() {
+    return await this.favsService.findAll();
   }
 
   @Post(':fav/:uuid')
-  addTrack(
+  async addTrack(
     @Param('fav') fav: string,
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
   ) {
-    const isAdded = this.favsService.add(fav, uuid);
-    if (isAdded) {
+    try {
+      await this.favsService.add(fav, uuid);
       return { message: `${fav} added to favorites` };
+    } catch {
+      throw new HttpException(
+        `${fav} not found`,
+        HttpStatus.UNPROCESSABLE_ENTITY,
+      );
     }
-    throw new HttpException(
-      `${fav} not found`,
-      HttpStatus.UNPROCESSABLE_ENTITY,
-    );
   }
 
   @Delete(':fav/:uuid')
   @HttpCode(204)
-  remove(
+  async remove(
     @Param('fav') fav: string,
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
   ) {
-    const isDeleted = this.favsService.remove(fav, uuid);
-    if (isDeleted) {
+    try {
+      await this.favsService.remove(fav, uuid);
       return { message: `${fav} deleted successfully` };
+    } catch {
+      throw new HttpException(`${fav} not found`, HttpStatus.NOT_FOUND);
     }
-    throw new HttpException(`${fav} not found`, HttpStatus.NOT_FOUND);
   }
 }

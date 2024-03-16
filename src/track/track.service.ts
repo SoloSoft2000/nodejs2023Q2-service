@@ -1,92 +1,53 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { Track } from './entities/track.entity';
-import { randomUUID } from 'crypto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class TrackService {
-  private tracks: Track[] = [];
-  private favorites: Set<string> = new Set();
+  constructor(private prisma: PrismaService) {}
 
-  addToFavorites(id: string) {
-    this.favorites.add(id);
-  }
-
-  removeFromFavorites(id: string) {
-    this.favorites.delete(id);
-  }
-
-  hasFavorite(id: string) {
-    return this.favorites.has(id);
-  }
-
-  getFavorites() {
-    return this.tracks.filter((track) => this.favorites.has(track.id));
-  }
-
-  create(createTrackDto: CreateTrackDto) {
-    const newTrack = new Track({
-      id: randomUUID(),
-      name: createTrackDto.name,
-      duration: createTrackDto.duration,
-      albumId: createTrackDto.albumId || null,
-      artistId: createTrackDto.artistId || null,
+  async create(createTrackDto: CreateTrackDto) {
+    return await this.prisma.track.create({
+      data: createTrackDto,
     });
-    this.tracks.push(newTrack);
-    return newTrack;
   }
 
-  findAll() {
-    return this.tracks;
+  async findAll() {
+    return await this.prisma.track.findMany();
   }
 
-  findOne(id: string) {
-    return this.tracks.find((track) => track.id === id);
+  async findOne(id: string) {
+    return await this.prisma.track.findUnique({
+      where: {
+        id,
+      },
+    });
   }
 
-  update(id: string, updateTrackDto: UpdateTrackDto) {
-    const idx = this.tracks.findIndex((track) => track.id === id);
-    if (idx === -1) {
+  async update(id: string, updateTrackDto: UpdateTrackDto) {
+    const trackForUpdate = await this.prisma.track.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!trackForUpdate) {
       throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }
 
-    const track = this.tracks[idx];
-    track.name = updateTrackDto.name || track.name;
-    track.duration = updateTrackDto.duration || track.duration;
-    track.albumId = updateTrackDto.albumId || track.albumId;
-    track.artistId = updateTrackDto.artistId || track.artistId;
-
-    this.tracks[idx] = track;
-
-    return this.tracks[idx];
-  }
-
-  remove(id: string) {
-    const initialLength = this.tracks.length;
-    this.tracks = this.tracks.filter((track) => track.id !== id);
-    const result = initialLength !== this.tracks.length;
-    if (result) {
-      this.removeFromFavorites(id);
-    }
-    return result;
-  }
-
-  removeArtist(id: string) {
-    this.tracks = this.tracks.map((track) => {
-      if (track.artistId === id) {
-        track.artistId = null;
-      }
-      return track;
+    return await this.prisma.track.update({
+      where: {
+        id,
+      },
+      data: updateTrackDto,
     });
   }
 
-  removeAlbum(id: string) {
-    this.tracks = this.tracks.map((track) => {
-      if (track.albumId === id) {
-        track.albumId = null;
-      }
-      return track;
+  async remove(id: string) {
+    return await this.prisma.track.delete({
+      where: {
+        id,
+      },
     });
   }
 }
