@@ -52,11 +52,14 @@ export class AlbumController {
 
   @Delete(':uuid')
   @HttpCode(204)
-  remove(@Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string) {
-    const isDeleted = this.albumService.remove(uuid);
-    if (isDeleted) {
+  async remove(
+    @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
+  ) {
+    try {
+      await this.albumService.remove(uuid);
       return { message: 'Album deleted successfully' };
+    } catch (error) {
+      throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
     }
-    throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
   }
 }

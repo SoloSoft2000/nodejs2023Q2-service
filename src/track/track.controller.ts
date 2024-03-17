@@ -52,11 +52,14 @@ export class TrackController {
 
   @Delete(':uuid')
   @HttpCode(204)
-  remove(@Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string) {
-    const isDeleted = this.trackService.remove(uuid);
-    if (isDeleted) {
+  async remove(
+    @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
+  ) {
+    try {
+      await this.trackService.remove(uuid);
       return { message: 'Track deleted successfully' };
+    } catch {
+      throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
     }
-    throw new HttpException('Track not found', HttpStatus.NOT_FOUND);
   }
 }

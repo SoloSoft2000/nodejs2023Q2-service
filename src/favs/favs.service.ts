@@ -14,8 +14,6 @@ export class FavsService {
       },
       select: {
         artist: true,
-        album: false,
-        track: false,
       },
     });
     const albums = await this.prisma.favorites.findMany({
@@ -26,8 +24,6 @@ export class FavsService {
       },
       select: {
         album: true,
-        artist: false,
-        track: false,
       },
     });
     const tracks = await this.prisma.favorites.findMany({
@@ -38,11 +34,13 @@ export class FavsService {
       },
       select: {
         track: true,
-        artist: false,
-        album: false,
       },
     });
-    return { artists, albums, tracks };
+    return {
+      artists: artists.map((item) => item.artist),
+      albums: albums.map((item) => item.album),
+      tracks: tracks.map((item) => item.track),
+    };
   }
 
   async add(favTable: string, id: string) {
