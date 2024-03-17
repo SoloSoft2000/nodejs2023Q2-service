@@ -1,0 +1,7 @@
+FROM postgres:alpine
+
+ENV POSTGRES_DB rssdb
+ENV POSTGRES_USER rssuser
+ENV POSTGRES_PASSWORD rsspassword
+
+EXPOSE 5432
