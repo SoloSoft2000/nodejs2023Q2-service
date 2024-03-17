@@ -23,18 +23,20 @@ export class TrackController {
 
   @Post()
   @UsePipes(new ValidationPipe({ transform: true }))
-  create(@Body() createTrackDto: CreateTrackDto) {
-    return this.trackService.create(createTrackDto);
+  async create(@Body() createTrackDto: CreateTrackDto) {
+    return await this.trackService.create(createTrackDto);
   }
 
   @Get()
-  findAll() {
-    return this.trackService.findAll();
+  async findAll() {
+    return await this.trackService.findAll();
   }
 
   @Get(':uuid')
-  findOne(@Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string) {
-    const track = this.trackService.findOne(uuid);
+  async findOne(
+    @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
+  ) {
+    const track = await this.trackService.findOne(uuid);
     if (track) {
       return track;
     }
@@ -43,11 +45,11 @@ export class TrackController {
 
   @Put(':uuid')
   @UsePipes(new ValidationPipe({ transform: true }))
-  update(
+  async update(
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
     @Body() updateTrackDto: UpdateTrackDto,
   ) {
-    return this.trackService.update(uuid, updateTrackDto);
+    return await this.trackService.update(uuid, updateTrackDto);
   }
 
   @Delete(':uuid')

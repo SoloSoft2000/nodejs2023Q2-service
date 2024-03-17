@@ -23,18 +23,20 @@ export class AlbumController {
 
   @Post()
   @UsePipes(new ValidationPipe({ transform: true }))
-  create(@Body() createAlbumDto: CreateAlbumDto) {
-    return this.albumService.create(createAlbumDto);
+  async create(@Body() createAlbumDto: CreateAlbumDto) {
+    return await this.albumService.create(createAlbumDto);
   }
 
   @Get()
-  findAll() {
-    return this.albumService.findAll();
+  async findAll() {
+    return await this.albumService.findAll();
   }
 
   @Get(':uuid')
-  findOne(@Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string) {
-    const album = this.albumService.findOne(uuid);
+  async findOne(
+    @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
+  ) {
+    const album = await this.albumService.findOne(uuid);
     if (album) {
       return album;
     }
@@ -43,11 +45,15 @@ export class AlbumController {
 
   @Put(':uuid')
   @UsePipes(new ValidationPipe({ transform: true }))
-  update(
+  async update(
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
     @Body() updateAlbumDto: UpdateAlbumDto,
   ) {
-    return this.albumService.update(uuid, updateAlbumDto);
+    try {
+      return await this.albumService.update(uuid, updateAlbumDto);
+    } catch (error) {
+      throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
+    }
   }
 
   @Delete(':uuid')

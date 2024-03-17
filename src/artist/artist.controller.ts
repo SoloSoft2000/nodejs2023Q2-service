@@ -23,18 +23,21 @@ export class ArtistController {
 
   @Post()
   @UsePipes(new ValidationPipe({ transform: true }))
-  create(@Body() createArtistDto: CreateArtistDto) {
-    return this.artistService.create(createArtistDto);
+  async create(@Body() createArtistDto: CreateArtistDto) {
+    return await this.artistService.create(createArtistDto);
   }
 
   @Get()
-  findAll() {
-    return this.artistService.findAll();
+  async findAll() {
+    return await this.artistService.findAll();
   }
 
   @Get(':uuid')
-  findOne(@Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string) {
-    const artist = this.artistService.findOne(uuid);
+  async findOne(
+    @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
+  ) {
+    const artist = await this.artistService.findOne(uuid);
+
     if (artist) {
       return artist;
     }
@@ -43,11 +46,11 @@ export class ArtistController {
 
   @Put(':uuid')
   @UsePipes(new ValidationPipe({ transform: true }))
-  update(
+  async update(
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
     @Body() updateArtistDto: UpdateArtistDto,
   ) {
-    return this.artistService.update(uuid, updateArtistDto);
+    return await this.artistService.update(uuid, updateArtistDto);
   }
 
   @Delete(':uuid')

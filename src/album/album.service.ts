@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -24,15 +24,6 @@ export class AlbumService {
   }
 
   async update(id: string, updateAlbumDto: UpdateAlbumDto) {
-    const albumForUpdate = this.prisma.album.findUnique({
-      where: {
-        id,
-      },
-    });
-    if (!albumForUpdate) {
-      throw new HttpException('Album not found', HttpStatus.NOT_FOUND);
-    }
-
     return await this.prisma.album.update({
       where: {
         id,
