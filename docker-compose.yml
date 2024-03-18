@@ -2,9 +2,21 @@ version: '3.9'
 
 services:
 
+  # nest:
+  #   build: .
+  #   restart: always
+  #   depends_on:
+  #     - db
+  #   ports:
+  #     - ${PORT}:${PORT}
+  #   volumes:
+  #     - ./src:/usr/app/src
+  #   networks:
+  #     - backnet
+
+
   db:
-    container_name: db
-    image: postgres:alpine
+    container_name: postgresdb
     build: ./postgres/
     restart: always
     environment:
@@ -19,25 +31,13 @@ services:
     ports:
       - ${PGPORT}:${PGPORT}
 
-  app:
-    container_name: app
-    build: .
+  adminer:
+    image: adminer
     restart: always
-    depends_on:
-      - db
-    ports:
-      - ${PORT}:${PORT}
-    volumes:
-      - ./src:/usr/app/src
-    environment:
-      PORT: ${PORT}
-      PGPORT: ${PGPORT}
-      PGDATABASE: ${PGDATABASE}
-      PGUSER: ${PGUSER}
-      PGPASSWORD: ${PGPASSWORD}
-      DATABASE_URL: www.sss.ddd
     networks:
       - backnet
+    ports:
+      - 8080:8080
 
 networks:
   backnet:
