@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import * as yaml from 'js-yaml';
 import { join } from 'path';
 
-const API_DOC_FILENAME = '../../doc/api.yaml';
+const API_DOC_FILENAME = '../doc/api.yaml';
 
 export const loadYaml = () => {
   const pathToFile = join(__dirname, API_DOC_FILENAME);

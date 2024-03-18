@@ -6,8 +6,6 @@ import {
   Param,
   Delete,
   Put,
-  UsePipes,
-  ValidationPipe,
   HttpCode,
   ParseUUIDPipe,
   HttpException,
@@ -22,7 +20,6 @@ export class ArtistController {
   constructor(private readonly artistService: ArtistService) {}
 
   @Post()
-  @UsePipes(new ValidationPipe({ transform: true }))
   async create(@Body() createArtistDto: CreateArtistDto) {
     return await this.artistService.create(createArtistDto);
   }
@@ -45,7 +42,6 @@ export class ArtistController {
   }
 
   @Put(':uuid')
-  @UsePipes(new ValidationPipe({ transform: true }))
   async update(
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
     @Body() updateArtistDto: UpdateArtistDto,

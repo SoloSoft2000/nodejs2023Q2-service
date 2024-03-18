@@ -6,8 +6,6 @@ import {
   Put,
   Param,
   Delete,
-  UsePipes,
-  ValidationPipe,
   ParseUUIDPipe,
   HttpCode,
   HttpException,
@@ -22,7 +20,6 @@ export class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 
   @Post()
-  @UsePipes(new ValidationPipe({ transform: true }))
   async create(@Body() createAlbumDto: CreateAlbumDto) {
     return await this.albumService.create(createAlbumDto);
   }
@@ -44,7 +41,6 @@ export class AlbumController {
   }
 
   @Put(':uuid')
-  @UsePipes(new ValidationPipe({ transform: true }))
   async update(
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
     @Body() updateAlbumDto: UpdateAlbumDto,

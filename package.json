@@ -21,9 +21,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
-  "prisma": {
-    "seed": "ts-node prisma/seed.ts"
-  },
+  "prisma": {},
   "dependencies": {
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^3.2.0",

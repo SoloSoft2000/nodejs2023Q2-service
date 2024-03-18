@@ -22,7 +22,6 @@ export class TrackController {
   constructor(private readonly trackService: TrackService) {}
 
   @Post()
-  @UsePipes(new ValidationPipe({ transform: true }))
   async create(@Body() createTrackDto: CreateTrackDto) {
     return await this.trackService.create(createTrackDto);
   }
@@ -44,7 +43,6 @@ export class TrackController {
   }
 
   @Put(':uuid')
-  @UsePipes(new ValidationPipe({ transform: true }))
   async update(
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
     @Body() updateTrackDto: UpdateTrackDto,

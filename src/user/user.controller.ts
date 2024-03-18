@@ -11,8 +11,6 @@ import {
   Post,
   Put,
   UseInterceptors,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -41,7 +39,6 @@ export class UserController {
   }
 
   @Post()
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async create(@Body() createUserDto: CreateUserDto) {
     return await this.userService.create(createUserDto);
   }
@@ -60,7 +57,6 @@ export class UserController {
   }
 
   @Put(':uuid')
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async updateUser(
     @Param('uuid', new ParseUUIDPipe({ version: '4' })) uuid: string,
     @Body() updateUserDto: UpdateUserDto,

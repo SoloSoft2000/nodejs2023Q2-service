@@ -2,20 +2,21 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { PrismaService } from '../prisma/prisma.service';
+import { ArtistEntity } from './entities/artist.entity';
 
 @Injectable()
 export class ArtistService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createArtistDto: CreateArtistDto) {
+  async create(createArtistDto: CreateArtistDto): Promise<ArtistEntity> {
     return await this.prisma.artist.create({ data: createArtistDto });
   }
 
-  async findAll() {
+  async findAll(): Promise<ArtistEntity[]> {
     return await this.prisma.artist.findMany();
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<ArtistEntity> {
     return await this.prisma.artist.findUnique({
       where: {
         id,
@@ -23,7 +24,10 @@ export class ArtistService {
     });
   }
 
-  async update(id: string, updateArtistDto: UpdateArtistDto) {
+  async update(
+    id: string,
+    updateArtistDto: UpdateArtistDto,
+  ): Promise<ArtistEntity> {
     const artistForUpdate = await this.prisma.artist.findUnique({
       where: {
         id,
@@ -41,7 +45,7 @@ export class ArtistService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: string): Promise<ArtistEntity> {
     return await this.prisma.artist.delete({
       where: {
         id,

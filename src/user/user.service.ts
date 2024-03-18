@@ -2,17 +2,17 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { User } from '@prisma/client';
+import { UserEntity } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll() {
+  async findAll(): Promise<UserEntity[]> {
     return await this.prisma.user.findMany();
   }
 
-  async findOne(userId: string) {
+  async findOne(userId: string): Promise<UserEntity> {
     return await this.prisma.user.findUnique({
       where: {
         id: userId,
@@ -20,11 +20,11 @@ export class UserService {
     });
   }
 
-  async create(user: CreateUserDto): Promise<User> {
+  async create(user: CreateUserDto): Promise<UserEntity> {
     return await this.prisma.user.create({ data: user });
   }
 
-  async remove(userId: string) {
+  async remove(userId: string): Promise<UserEntity> {
     return await this.prisma.user.delete({
       where: {
         id: userId,
@@ -32,7 +32,7 @@ export class UserService {
     });
   }
 
-  async update(userId: string, userData: UpdateUserDto) {
+  async update(userId: string, userData: UpdateUserDto): Promise<UserEntity> {
     const userForUpdate = await this.prisma.user.findUnique({
       where: {
         id: userId,
