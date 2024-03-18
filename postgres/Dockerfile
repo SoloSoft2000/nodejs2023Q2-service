@@ -1,7 +1,6 @@
-FROM postgres:alpine
+FROM postgres:16.2-alpine
 
-ENV POSTGRES_DB rssdb
-ENV POSTGRES_USER rssuser
-ENV POSTGRES_PASSWORD rsspassword
+RUN ["mkdir", "/var/log/myLogs"]
+RUN ["chown", "postgres:postgres", "/var/log/myLogs"]
 
-EXPOSE 5432
+CMD [ "postgres", '-c', "logging_collector=on", "-c", "log_directory=/var/log/myLogs" ]

@@ -3,16 +3,43 @@ version: '3.9'
 services:
 
   db:
+    container_name: db
+    image: postgres:alpine
     build: ./postgres/
     restart: always
+    environment:
+      POSTGRES_DB: ${PGDATABASE}
+      POSTGRES_USER: ${PGUSER}
+      POSTGRES_PASSWORD: ${PGPASSWORD}
     networks:
-      - backend_network
-    shm_size: 128mb
+      - backnet
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
+      - ./postgres_log:/var/log/myLogs
     ports:
-      - 5432:5432
+      - ${PGPORT}:${PGPORT}
+
+  app:
+    container_name: app
+    build: .
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - ./src:/usr/app/src
+    environment:
+      PORT: ${PORT}
+      PGPORT: ${PGPORT}
+      PGDATABASE: ${PGDATABASE}
+      PGUSER: ${PGUSER}
+      PGPASSWORD: ${PGPASSWORD}
+      DATABASE_URL: www.sss.ddd
+    networks:
+      - backnet
 
 networks:
-  backend_network:
-    driver: bridge  
+  backnet:
+    name: ${NETWORK}
+    driver: ${DRIVER}
