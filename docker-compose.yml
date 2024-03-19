@@ -2,21 +2,20 @@ version: '3.9'
 
 services:
 
-  # nest:
-  #   build: .
-  #   restart: always
-  #   depends_on:
-  #     - db
-  #   ports:
-  #     - ${PORT}:${PORT}
-  #   volumes:
-  #     - ./src:/usr/app/src
-  #   networks:
-  #     - backnet
-
+  nest:
+    build: .
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - ./src:/usr/app/src
+    networks:
+      - backnet
 
   db:
-    container_name: postgresdb
+    container_name: db
     build: ./postgres/
     restart: always
     environment:
@@ -30,14 +29,6 @@ services:
       - ./postgres_log:/var/log/myLogs
     ports:
       - ${PGPORT}:${PGPORT}
-
-  adminer:
-    image: adminer
-    restart: always
-    networks:
-      - backnet
-    ports:
-      - 8080:8080
 
 networks:
   backnet:
