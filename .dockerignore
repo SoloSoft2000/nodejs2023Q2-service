@@ -2,3 +2,11 @@ node_modules
 npm-debug.log
 postgres_data
 postgres_log
+.dockerignore
+Dockerfile
+.git
+.gitignore
+.npmrc
+.env-*
+.github
+*.md

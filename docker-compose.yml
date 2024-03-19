@@ -1,24 +1,24 @@
 version: '3.9'
-
 services:
-
-  nest:
-    build: .
+  nest-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: always
     depends_on:
-      - db
+      - postgres
     ports:
       - ${PORT}:${PORT}
     env_file:
       - .env
-    volumes:
-      - ./src:/usr/app/src
     networks:
       - backnet
 
-  db:
-    container_name: db
-    build: ./postgres/
+  postgres:
+    container_name: postgresprisma
+    build:
+      context: .
+      dockerfile: ./postgres/Dockerfile
     restart: always
     environment:
       POSTGRES_DB: ${PGDATABASE}
@@ -27,8 +27,9 @@ services:
     networks:
       - backnet
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
-      - ./postgres_log:/var/log/myLogs
+      - postgres:/var/lib/postgresql/data
+      # - ./postgres_data:/var/lib/postgresql/data
+      # - ./postgres_log:/var/log/myLogs
     ports:
       - ${PGPORT}:${PGPORT}
 
@@ -36,3 +37,7 @@ networks:
   backnet:
     name: ${NETWORK}
     driver: ${DRIVER}
+
+volumes:
+  postgres:
+    name: nest-prisma-docker-db

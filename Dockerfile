@@ -1,14 +1,22 @@
-FROM node:20-alpine as build
+FROM node:20 as build
 
-WORKDIR /usr/app
+WORKDIR /app
 
 COPY package*.json ./
 COPY prisma ./prisma/
 
-RUN npm ci
+RUN npm install
 
 COPY . .
 
 RUN npm run build
 
-CMD [ "npm", "run", "start:migrate:dev" ]
+FROM node:20-alpine
+
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/package*.json ./
+COPY --from=build /app/dist ./dist
+
+EXPOSE ${PORT}
+
+CMD [ "npm", "run", "start:prod" ]
