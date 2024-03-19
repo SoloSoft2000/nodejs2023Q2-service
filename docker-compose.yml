@@ -9,6 +9,8 @@ services:
       - db
     ports:
       - ${PORT}:${PORT}
+    env_file:
+      - .env
     volumes:
       - ./src:/usr/app/src
     networks:
