@@ -28,7 +28,6 @@ export class AlbumService {
     id: string,
     updateAlbumDto: UpdateAlbumDto,
   ): Promise<AlbumEntity> {
-    console.log(updateAlbumDto);
     return await this.prisma.album.update({
       where: {
         id,

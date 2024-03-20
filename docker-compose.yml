@@ -20,18 +20,15 @@ services:
       context: .
       dockerfile: ./postgres/Dockerfile
     restart: always
-    environment:
-      POSTGRES_DB: ${PGDATABASE}
-      POSTGRES_USER: ${PGUSER}
-      POSTGRES_PASSWORD: ${PGPASSWORD}
+    env_file:
+      - .env
     networks:
       - backnet
     volumes:
-      - postgres:/var/lib/postgresql/data
-      # - ./postgres_data:/var/lib/postgresql/data
-      # - ./postgres_log:/var/log/myLogs
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_log:/var/log/myLogs
     ports:
-      - ${PGPORT}:${PGPORT}
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
 
 networks:
   backnet:
@@ -39,5 +36,7 @@ networks:
     driver: ${DRIVER}
 
 volumes:
-  postgres:
-    name: nest-prisma-docker-db
+  postgres_data:
+    name: db
+  postgres_log:
+    name: log
