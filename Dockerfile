@@ -24,4 +24,4 @@ COPY --from=build /app/tsconfig.build.json ./
 
 EXPOSE ${PORT}
 
-CMD [ "npm", "run", "start:migrate:dev" ]
+CMD npm run start:migrate:dev
