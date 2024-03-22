@@ -13,6 +13,8 @@ services:
       - .env
     networks:
       - backnet
+    volumes:
+      - ./src:/app/src
 
   postgres:
     container_name: postgresprisma
