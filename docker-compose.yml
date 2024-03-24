@@ -19,7 +19,7 @@ services:
       - ./src:/app/src
 
   postgres:
-    container_name: postgresprisma
+    container_name: ${POSTGRES_HOST}
     image: solosoft2000/postgres
     build:
       context: .
