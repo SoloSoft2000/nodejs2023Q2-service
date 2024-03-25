@@ -1,31 +1,28 @@
 # Home Library Service
 
 ## Prerequisites
-
+- Docker Desktop [Download & Install Docker Desktop](https://docs.docker.com/engine/install/)
 - Git - [Download & Install Git](https://git-scm.com/downloads).
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
 
-## Downloading
+## Downloading and set branch
 
-```
-git clone {repository URL}
-```
+***git clone https://github.com/SoloSoft2000/nodejs2024Q1-service*** <br>
+***cd nodeje2024q1-service*** <br>
+***git checkout develop***
 
-## Installing NPM modules
+## Build and Run application
+#### **Before starting the application, please ensure that you do not have any other containers or applications running that may conflict with the current application (such as using the same ports, volumes, etc.)**
 
-```
-npm install
-```
+1 - create .env file (based on .env.example): <br>
+***cp ./.env.example ./.env*** (_copy_ for Windows)
 
-## Running application
+2 - start application via script docker:start: <br>
+***npm run docker:start***
 
-```
-npm start
-```
+## Stop application
 
-After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
-For more information about OpenAPI/Swagger please visit https://swagger.io/.
+***npm run docker:stop***
 
 ## Testing
 
@@ -33,40 +30,17 @@ After application running open new terminal and enter:
 
 To run all tests without authorization
 
-```
-npm run test
-```
+### Local testing
+#### **Before local test install NPM modules**
 
-To run only one of all test suites
+***npm install***
 
-```
-npm run test -- <path to suite>
-```
+***npm run test***
 
-To run all test with authorization
+### Testing in container
 
-```
-npm run test:auth
-```
+***npm run docker:test***
 
-To run only specific test suite with authorization
+## Security vulnerabilities
 
-```
-npm run test:auth -- <path to suite>
-```
-
-### Auto-fix and format
-
-```
-npm run lint
-```
-
-```
-npm run format
-```
-
-### Debugging in VSCode
-
-Press <kbd>F5</kbd> to debug.
-
-For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+***npm run docker:scan***
