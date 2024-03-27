@@ -51,6 +51,9 @@ CREATE TABLE "Favorites" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "User_login_key" ON "User"("login");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Favorites_artistId_key" ON "Favorites"("artistId");
 
 -- CreateIndex
