@@ -12,10 +12,10 @@ export class UserService {
     return await this.prisma.user.findMany();
   }
 
-  async findOne(userId: string): Promise<UserEntity> {
-    return await this.prisma.user.findUnique({
+  async findOne(userIdorLogin: string): Promise<UserEntity> {
+    return await this.prisma.user.findFirst({
       where: {
-        id: userId,
+        OR: [{ id: userIdorLogin }, { login: userIdorLogin }],
       },
     });
   }

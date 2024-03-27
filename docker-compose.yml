@@ -1,22 +1,22 @@
 version: '3.9'
 services:
-  nest-api:
-    container_name: nestapi
-    image: solosoft2000/nest-api
-    build:
-      context: .
-      dockerfile: Dockerfile
-    restart: always
-    depends_on:
-      - postgres
-    ports:
-      - ${PORT}:${PORT}
-    env_file:
-      - .env
-    networks:
-      - backnet
-    volumes:
-      - ./src:/app/src
+  # nest-api:
+  #   container_name: nestapi
+  #   image: solosoft2000/nest-api
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   restart: always
+  #   depends_on:
+  #     - postgres
+  #   ports:
+  #     - ${PORT}:${PORT}
+  #   env_file:
+  #     - .env
+  #   networks:
+  #     - backnet
+  #   volumes:
+  #     - ./src:/app/src
 
   postgres:
     container_name: ${POSTGRES_HOST}
@@ -34,6 +34,12 @@ services:
       - postgres_log:/var/log/myLogs
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
 
 networks:
   backnet:
