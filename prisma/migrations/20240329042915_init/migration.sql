@@ -75,7 +75,7 @@ CREATE UNIQUE INDEX "Favorites_trackId_key" ON "Favorites"("trackId");
 CREATE UNIQUE INDEX "Favorites_albumId_key" ON "Favorites"("albumId");
 
 -- AddForeignKey
-ALTER TABLE "HashRT" ADD CONSTRAINT "HashRT_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "HashRT" ADD CONSTRAINT "HashRT_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Album" ADD CONSTRAINT "Album_artistId_fkey" FOREIGN KEY ("artistId") REFERENCES "Artist"("id") ON DELETE SET NULL ON UPDATE CASCADE;
