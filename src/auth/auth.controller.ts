@@ -1,16 +1,17 @@
 import {
   Body,
   Controller,
-  Get,
+  HttpCode,
   HttpException,
   HttpStatus,
   Post,
-  Request,
+  UsePipes,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Public } from 'src/helpers';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserService } from 'src/user/user.service';
+import { RefreshTokenPipe } from './pipes/refresh-token.pipe';
 
 @Controller('auth')
 export class AuthController {
@@ -35,8 +36,11 @@ export class AuthController {
     return this.authService.signIn(signInDto);
   }
 
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
+  @Public()
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @UsePipes(RefreshTokenPipe)
+  async refresh(@Body() refreshToken) {
+    return this.authService.refresh(refreshToken);
   }
 }

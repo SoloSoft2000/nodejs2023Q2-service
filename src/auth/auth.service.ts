@@ -5,6 +5,8 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { ConfigService } from '@nestjs/config';
 import { Payload, Tokens } from './types/auth.types';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { RefreshTokenEntity } from './entities/refreh-token.entity';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -48,5 +50,21 @@ export class AuthService {
     });
 
     return { accessToken, refreshToken };
+  }
+
+  async refresh(user: User): Promise<Tokens> {
+    console.log(user);
+    return this.getTokens({ userId: user.id, login: user.login });
+  }
+
+  async findUserByRefreshToken(token: string): Promise<RefreshTokenEntity> {
+    return await this.prisma.hashRT.findFirst({
+      where: {
+        hashRt: token,
+      },
+      include: {
+        user: true,
+      },
+    });
   }
 }
