@@ -6,7 +6,6 @@ import { ConfigService } from '@nestjs/config';
 import { Payload, Tokens } from './types/auth.types';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RefreshTokenEntity } from './entities/refreh-token.entity';
-import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -52,9 +51,9 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async refresh(user: User): Promise<Tokens> {
-    console.log(user);
-    return this.getTokens({ userId: user.id, login: user.login });
+  async refresh(body: { refreshToken: string }): Promise<Tokens> {
+    const hashRt = await this.findUserByRefreshToken(body.refreshToken);
+    return this.getTokens({ userId: hashRt.user.id, login: hashRt.user.login });
   }
 
   async findUserByRefreshToken(token: string): Promise<RefreshTokenEntity> {
