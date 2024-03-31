@@ -5,22 +5,8 @@ import { join } from 'path';
 
 @Injectable()
 export class LoggingService implements LoggerService {
-  // log(message: any, ...optionalParams: any[]) {
-
-  // }
-
-  // fatal(message: any, ...optionalParams: any[]) {}
-
-  // error(message: any, ...optionalParams: any[]) {}
-
-  // warn(message: any, ...optionalParams: any[]) {}
-
-  // debug?(message: any, ...optionalParams: any[]) {}
-
-  // verbose?(message: any, ...optionalParams: any[]) {}
-
   private logDirectory: string;
-  private logFileName: string;
+  private errLogFilePath: string;
   private logFilePath: string;
   private maxLogFileSizeKB: number;
   private fileCreated = false;
@@ -31,8 +17,7 @@ export class LoggingService implements LoggerService {
       process.cwd(),
       this.configService.get<string>('LOG_DIRECTORY'),
     );
-    this.logFileName = this.configService.get<string>('LOG_FILENAME');
-    this.createLogFile();
+    this.createLogFile('INIT');
   }
 
   async log(message: string) {
@@ -49,12 +34,12 @@ export class LoggingService implements LoggerService {
 
   async error(message: string) {
     const logMessage = `[${new Date().toISOString()}] Error: ${message}\n`;
-    await this.appendFileWithSizeCheck(logMessage);
+    await this.appendFileWithSizeCheck(logMessage, true);
   }
 
   async warn(message: string) {
-    const logMessage = `[${new Date().toISOString()}] ${message}\n`;
-    await this.appendFileWithSizeCheck(logMessage);
+    const logMessage = `[${new Date().toISOString()}] Warn: ${message}\n`;
+    await this.appendFileWithSizeCheck(logMessage, true);
   }
 
   async logRequest(url: string, method: string, query: any, body: any) {
@@ -67,35 +52,46 @@ export class LoggingService implements LoggerService {
     await this.log(`Response: Status ${statusCode}`);
   }
 
-  private async appendFileWithSizeCheck(logMessage: string) {
+  private async appendFileWithSizeCheck(logMessage: string, isError = false) {
     try {
-      const stats = await stat(this.logFilePath);
+      const stats = await stat(
+        isError ? this.errLogFilePath : this.logFilePath,
+      );
       const fileSizeInBytes = stats.size;
       const fileSizeInKB = fileSizeInBytes / 1024;
 
       if (fileSizeInKB + logMessage.length > this.maxLogFileSizeKB) {
-        await this.createLogFile();
+        await this.createLogFile(isError ? 'ERR' : 'APP');
       }
     } catch {}
 
-    await appendFile(this.logFilePath, logMessage);
+    await appendFile(
+      isError ? this.errLogFilePath : this.logFilePath,
+      logMessage,
+    );
   }
 
-  async createLogFile() {
+  async createLogFile(typeFile: 'INIT' | 'APP' | 'ERR') {
     try {
       await mkdir(this.logDirectory, { recursive: true });
       const currentDate = new Date()
         .toISOString()
         .slice(0, 19)
         .replace(/\D/g, '');
-      this.logFilePath = join(
-        this.logDirectory,
-        `${this.logFileName}_${currentDate}.log`,
-      );
-      console.log(this.logFilePath);
-
-      await appendFile(this.logFilePath, '');
-      this.fileCreated = true;
+      if (typeFile === 'INIT' || typeFile === 'APP') {
+        this.logFilePath = join(
+          this.logDirectory,
+          `LOG_${currentDate}_APP.log`,
+        );
+        await appendFile(this.logFilePath, '');
+        this.fileCreated = true;
+      }
+      if (typeFile === 'INIT' || typeFile === 'ERR') {
+        this.errLogFilePath = join(
+          this.logDirectory,
+          `LOG_${currentDate}_ERR.log`,
+        );
+      }
     } catch (error) {
       console.error(`Error creating log file: ${error.message}`);
     }
