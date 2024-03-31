@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpException,
   HttpStatus,
@@ -40,5 +41,10 @@ export class AuthController {
   @UseGuards(AuthRtGuard)
   async refresh(@Body() refreshToken) {
     return this.authService.refresh(refreshToken);
+  }
+
+  @Get('error')
+  throwError() {
+    throw Error('Error test');
   }
 }

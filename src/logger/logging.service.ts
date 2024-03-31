@@ -48,7 +48,7 @@ export class LoggingService implements LoggerService {
   }
 
   async error(message: string) {
-    const logMessage = `[${new Date().toISOString()}] ${message}\n`;
+    const logMessage = `[${new Date().toISOString()}] Error: ${message}\n`;
     await this.appendFileWithSizeCheck(logMessage);
   }
 
