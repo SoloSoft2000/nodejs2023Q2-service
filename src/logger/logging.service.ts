@@ -42,6 +42,11 @@ export class LoggingService implements LoggerService {
     }
   }
 
+  async verbose(message: string) {
+    const logMessage = `[${new Date().toISOString()}] Verbose: ${message}\n`;
+    await this.appendFileWithSizeCheck(logMessage);
+  }
+
   async error(message: string) {
     const logMessage = `[${new Date().toISOString()}] ${message}\n`;
     await this.appendFileWithSizeCheck(logMessage);

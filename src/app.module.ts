@@ -9,11 +9,12 @@ import { FavsModule } from './favs/favs.module';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AuthGuard } from './auth/guards/auth.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { LoggingModule } from './logger/logging.module';
 import { LoggingMiddleware } from './logger/logging.middleware';
+import { LoggingInterceptor } from './logger/logging.interceptor';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { LoggingMiddleware } from './logger/logging.middleware';
     AppService,
     LoggingModule,
     { provide: APP_GUARD, useClass: AuthGuard },
+    { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
   ],
   exports: [LoggingModule],
 })
