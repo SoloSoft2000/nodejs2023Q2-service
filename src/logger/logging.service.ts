@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 
 @Injectable()
-export class AppLogger implements LoggerService {
+export class LoggingService implements LoggerService {
   // log(message: any, ...optionalParams: any[]) {
 
   // }
@@ -22,10 +22,11 @@ export class AppLogger implements LoggerService {
   private logDirectory: string;
   private logFileName: string;
   private logFilePath: string;
-  private maxLogFileSizeKB = 1024;
+  private maxLogFileSizeKB: number;
   private fileCreated = false;
 
   constructor(private readonly configService: ConfigService) {
+    this.maxLogFileSizeKB = this.configService.get<number>('LOG_SIZE');
     this.logDirectory = join(
       process.cwd(),
       this.configService.get<string>('LOG_DIRECTORY'),
