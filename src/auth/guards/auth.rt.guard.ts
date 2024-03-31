@@ -18,7 +18,6 @@ export class AuthRtGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    console.log('111');
     const request = context.switchToHttp().getRequest();
     const refreshToken = request.body.refreshToken;
 

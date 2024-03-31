@@ -1,18 +1,19 @@
 import {
   Body,
   Controller,
+  HttpCode,
   HttpException,
   HttpStatus,
   Post,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-// import { Public } from 'src/helpers';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthRtGuard } from './guards/auth.rt.guard';
+import { Public } from 'src/helpers';
 
-@UseGuards()
+@Public()
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -20,7 +21,6 @@ export class AuthController {
     private readonly userService: UserService,
   ) {}
 
-  // @Public()
   @Post('signup')
   async signUp(@Body() createUserDto: CreateUserDto) {
     try {
@@ -30,13 +30,13 @@ export class AuthController {
     }
   }
 
-  // @Public()
   @Post('login')
   signIn(@Body() signInDto: CreateUserDto) {
     return this.authService.signIn(signInDto);
   }
 
   @Post('refresh')
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthRtGuard)
   async refresh(@Body() refreshToken) {
     return this.authService.refresh(refreshToken);

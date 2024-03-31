@@ -66,13 +66,18 @@ export class UserService {
     );
 
     if (isPasswordValid) {
+      const cryptSalt = this.configService.get<number>('CRYPT_SALT');
+      const hashedPassword = await bcrypt.hash(
+        userData.newPassword,
+        +cryptSalt,
+      );
       const newVersion = userForUpdate.version + 1;
       return await this.prisma.user.update({
         where: {
           id: userId,
         },
         data: {
-          password: userData.newPassword,
+          password: hashedPassword,
           version: newVersion,
         },
       });
