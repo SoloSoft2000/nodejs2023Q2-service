@@ -1,17 +1,19 @@
 import { mkdir, stat, appendFile } from 'fs/promises';
-import { Injectable, LoggerService } from '@nestjs/common';
+import { ConsoleLogger, Injectable, LogLevel } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 
 @Injectable()
-export class LoggingService implements LoggerService {
+export class LoggingService extends ConsoleLogger {
   private logDirectory: string;
   private errLogFilePath: string;
   private logFilePath: string;
   private maxLogFileSizeKB: number;
   private fileCreated = false;
+  private logLevels: LogLevel[] = ['log'];
 
   constructor(private readonly configService: ConfigService) {
+    super();
     this.maxLogFileSizeKB = this.configService.get<number>('LOG_SIZE');
     this.logDirectory = join(
       process.cwd(),
@@ -20,36 +22,62 @@ export class LoggingService implements LoggerService {
     this.createLogFile('INIT');
   }
 
+  setLogLevels(levels: LogLevel[]) {
+    this.logLevels = levels;
+  }
+
   async log(message: string) {
-    if (this.fileCreated) {
+    super.log(message);
+    if (this.fileCreated && this.logLevels.includes('log')) {
       const logMessage = `[${new Date().toISOString()}] ${message}\n`;
       await this.appendFileWithSizeCheck(logMessage);
     }
   }
 
   async verbose(message: string) {
-    const logMessage = `[${new Date().toISOString()}] Verbose: ${message}\n`;
-    await this.appendFileWithSizeCheck(logMessage);
+    super.verbose(message);
+    if (this.fileCreated && this.logLevels.includes('verbose')) {
+      const logMessage = `[${new Date().toISOString()}] Verbose: ${message}\n`;
+      await this.appendFileWithSizeCheck(logMessage);
+    }
   }
 
   async error(message: string) {
-    const logMessage = `[${new Date().toISOString()}] Error: ${message}\n`;
-    await this.appendFileWithSizeCheck(logMessage, true);
+    super.error(message);
+    if (this.logLevels.includes('error')) {
+      const logMessage = `[${new Date().toISOString()}] Error: ${message}\n`;
+      await this.appendFileWithSizeCheck(logMessage, true);
+    }
   }
 
   async warn(message: string) {
-    const logMessage = `[${new Date().toISOString()}] Warn: ${message}\n`;
-    await this.appendFileWithSizeCheck(logMessage, true);
+    super.warn(message);
+    if (this.logLevels.includes('warn')) {
+      const logMessage = `[${new Date().toISOString()}] Warn: ${message}\n`;
+      await this.appendFileWithSizeCheck(logMessage, true);
+    }
+  }
+
+  async fatal(message: string) {
+    super.fatal(message);
+    if (this.logLevels.includes('fatal')) {
+      const logMessage = `[${new Date().toISOString()}] Fatal: ${message}\n`;
+      await this.appendFileWithSizeCheck(logMessage, true);
+    }
   }
 
   async logRequest(url: string, method: string, query: any, body: any) {
-    await this.log(
-      `Request: ${method} ${url} | Query: ${JSON.stringify(query)} | Body: ${JSON.stringify(body)}`,
-    );
+    if (this.logLevels.includes('log')) {
+      await this.log(
+        `Request: ${method} ${url} | Query: ${JSON.stringify(query)} | Body: ${JSON.stringify(body)}`,
+      );
+    }
   }
 
   async logResponse(statusCode: number) {
-    await this.log(`Response: Status ${statusCode}`);
+    if (this.logLevels.includes('log')) {
+      await this.log(`Response: Status ${statusCode}`);
+    }
   }
 
   private async appendFileWithSizeCheck(logMessage: string, isError = false) {

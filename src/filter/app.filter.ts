@@ -25,7 +25,11 @@ export class AppFilter<T> implements ExceptionFilter {
         ? exception.message
         : 'Internal server error';
 
-    this.logger.error(`code: ${status} | message: ${message}`);
+    if (status < 500) {
+      this.logger.warn(`code: ${status} | message: ${message}`);
+    } else {
+      this.logger.error(`code: ${status} | message: ${message}`);
+    }
 
     response.status(status).json({
       statusCode: status,
