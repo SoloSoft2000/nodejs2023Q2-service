@@ -34,13 +34,15 @@ async function bootstrap() {
   const document = loadYaml();
   SwaggerModule.setup('doc', app, document);
 
+  // Uncomment next lines for Test uncaughtException
   // setTimeout(() => {
   //   throw new Error('Test uncaughtException');
   // }, 5000);
 
+  // Uncomment next lines for Test unhandledRejection
   // setTimeout(() => {
   //   Promise.reject(new Error('Test unhandledRejection'));
-  // }, 9000);
+  // }, 5000);
 
   await app.listen(PORT, () => console.log(`Server started on ${PORT}`));
 }

@@ -2,6 +2,7 @@ node_modules
 npm-debug.log
 postgres_data
 postgres_log
+logs
 .dockerignore
 Dockerfile
 .git
