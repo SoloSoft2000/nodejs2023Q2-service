@@ -2,6 +2,7 @@ import { mkdir, stat, appendFile } from 'fs/promises';
 import { ConsoleLogger, Injectable, LogLevel } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
+import { appendFileSync } from 'fs';
 
 @Injectable()
 export class LoggingService extends ConsoleLogger {
@@ -30,6 +31,14 @@ export class LoggingService extends ConsoleLogger {
     super.log(message);
     if (this.fileCreated && this.logLevels.includes('log')) {
       const logMessage = `[${new Date().toISOString()}] ${message}\n`;
+      await this.appendFileWithSizeCheck(logMessage);
+    }
+  }
+
+  async debug(message: string, ...optional: string[]): Promise<void> {
+    super.debug(message, ...optional);
+    if (this.fileCreated && this.logLevels.includes('debug')) {
+      const logMessage = `[${new Date().toISOString()}] Debug: ${message}\n`;
       await this.appendFileWithSizeCheck(logMessage);
     }
   }
@@ -93,7 +102,7 @@ export class LoggingService extends ConsoleLogger {
       }
     } catch {}
 
-    await appendFile(
+    appendFileSync(
       isError ? this.errLogFilePath : this.logFilePath,
       logMessage,
     );
