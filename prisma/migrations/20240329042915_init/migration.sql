@@ -11,6 +11,15 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
+CREATE TABLE "HashRT" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "hashRt" TEXT NOT NULL,
+
+    CONSTRAINT "HashRT_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Artist" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -51,6 +60,12 @@ CREATE TABLE "Favorites" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "User_login_key" ON "User"("login");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "HashRT_userId_key" ON "HashRT"("userId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Favorites_artistId_key" ON "Favorites"("artistId");
 
 -- CreateIndex
@@ -58,6 +73,9 @@ CREATE UNIQUE INDEX "Favorites_trackId_key" ON "Favorites"("trackId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Favorites_albumId_key" ON "Favorites"("albumId");
+
+-- AddForeignKey
+ALTER TABLE "HashRT" ADD CONSTRAINT "HashRT_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Album" ADD CONSTRAINT "Album_artistId_fkey" FOREIGN KEY ("artistId") REFERENCES "Artist"("id") ON DELETE SET NULL ON UPDATE CASCADE;

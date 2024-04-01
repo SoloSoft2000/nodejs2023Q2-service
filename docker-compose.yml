@@ -17,6 +17,7 @@ services:
       - backnet
     volumes:
       - ./src:/app/src
+      - app_logs:/app/${LOG_DIRECTORY}
 
   postgres:
     container_name: ${POSTGRES_HOST}
@@ -42,6 +43,9 @@ networks:
 
 volumes:
   postgres_data:
-    name: db
+    name: db_data
   postgres_log:
-    name: log
+    name: db_log
+  app_logs:
+    name: app_log
+    

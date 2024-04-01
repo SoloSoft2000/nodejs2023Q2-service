@@ -40,7 +40,11 @@ export class UserController {
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
-    return await this.userService.create(createUserDto);
+    try {
+      return await this.userService.create(createUserDto);
+    } catch {
+      throw new HttpException('Already signed up', HttpStatus.CONFLICT);
+    }
   }
 
   @Delete(':uuid')
